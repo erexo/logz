@@ -279,12 +279,12 @@ func getLogPrefix(level LogLevel) string {
 
 func newLogger(level LogLevel, out io.Writer, logStdLevel, logOutLevel LogLevel, flags int) *log.Logger {
 	var w io.Writer
-	if level >= logStdLevel {
+	if level >= logStdLevel && os.Stdout != nil {
 		w = os.Stdout
 	}
 	if level >= logOutLevel && out != w {
 		if w != nil {
-			w = io.MultiWriter(w, out)
+			w = MultiWriter(w, out)
 		} else {
 			w = out
 		}
