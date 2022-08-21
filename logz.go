@@ -61,21 +61,9 @@ func Close() error {
 		return NotInitializedErr
 	}
 
-	r := recover()
-	if r != nil {
-		var ok bool
-		err, ok := r.(error)
-		if !ok {
-			err = fmt.Errorf("%v", r)
-		}
-		Log(LogLevelCritical, err)
-	}
 	initialized = false
 	if close, ok := write.(io.Closer); ok {
 		close.Close()
-	}
-	if r != nil {
-		panic(r) //rethrow from here
 	}
 	return nil
 }
@@ -238,6 +226,13 @@ func Criticalf(format string, v ...interface{}) {
 		fmt.Fprintln(write, string(debug.Stack()))
 	}
 	os.Exit(1)
+}
+
+func Recover() {
+	if r := recover(); r != nil {
+		Log(LogLevelCritical, r)
+		panic(r)
+	}
 }
 
 func GetLogLevel(str string) LogLevel {
